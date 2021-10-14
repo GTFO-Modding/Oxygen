@@ -8,13 +8,16 @@ namespace Oxygen.Components
 {
     public class AirDamage : MonoBehaviour
     {
-        static PlayerAgent m_playerAgent;
-        public HUDGlassShatter m_hudGlass;
-        public float m_glassShatter;
-        public float m_damageTime;
-        Dam_PlayerDamageBase Damage;
-        public static AirBar m_AirBar;
+        private PlayerAgent m_playerAgent;
+        private HUDGlassShatter m_hudGlass;
+        private Dam_PlayerDamageBase Damage;
+        
         public float m_air = 1f;
+        private float m_damageTick = 0f;
+        public float m_damageTime = 2f;
+        public float m_damageAmount = 1f;
+        public float m_glassShatter = 0f;
+        public float m_shatterAmount = 0.05f;
         
         public AirDamage(IntPtr value) : base(value) { }
         
@@ -33,7 +36,8 @@ namespace Oxygen.Components
         void Update()
         {
             if (!RundownManager.ExpeditionIsStarted) return;
-
+            
+            // Decide if air should increase or decrease
             if (m_air > 0 && m_playerAgent.m_movingCuller.CurrentNode.CourseNode.NodeID % 2 > 0)
             {
                 m_air -= Time.deltaTime * 0.05f;
@@ -43,39 +47,40 @@ namespace Oxygen.Components
                 m_air += Time.deltaTime * 0.05f;
             }
 
+            // Breathing intensity, Coughing, and Damage Tick
             if (m_air > 0.8f && m_air <= 1.0f)
             {
                 m_playerAgent.Breathing.TryChangeBreathingIntensity(0);
             }
-            else if (m_air > 0.6f && m_air <= 0.8f)
+            else if (m_air > 0.6f)
             {
                 m_playerAgent.Breathing.TryChangeBreathingIntensity(1);
                 PlayerDialogManager.WantToStartDialog(174U, m_playerAgent);
             }
-            else if (m_air > 0.4f && m_air <= 0.6f)
+            else if (m_air > 0.4f)
             {
                 m_playerAgent.Breathing.TryChangeBreathingIntensity(2);
                 PlayerDialogManager.WantToStartDialog(174U, m_playerAgent);
             }
-            else if (m_air > 0.2 && m_air <= 0.4f)
+            else if (m_air > 0.2)
             {
                 m_playerAgent.Breathing.TryChangeBreathingIntensity(3);
                 PlayerDialogManager.WantToStartDialog(173U, m_playerAgent);
             }
             else if (m_air < 0.2f)
             {
-                m_damageTime += Time.deltaTime;
+                m_damageTick += Time.deltaTime;
                 PlayerDialogManager.WantToStartDialog(173U, m_playerAgent);
             }
 
-            if (m_damageTime > 2f)
+            if (m_damageTick > m_damageTime)
             {
-                Damage.NoAirDamage(1f);
+                Damage.NoAirDamage(m_damageAmount);
                 
-                m_glassShatter += 0.05f;
+                m_glassShatter += m_shatterAmount;
                 m_hudGlass.SetGlassShatterProgression(m_glassShatter);
                 
-                m_damageTime = 0f;
+                m_damageTick = 0f;
             }
         }
     }
