@@ -63,10 +63,10 @@ namespace Oxygen.Components
         {
             if (m_AirDamage == null) return;
             // If air value is not synced
-            if (this.m_air != m_AirDamage.m_air)
+            if (this.m_air != AirDamage.m_air)
             {
                 // Sync air value
-                this.m_air = m_AirDamage.m_air;
+                this.m_air = AirDamage.m_air;
                 
                 // Make bar visible
                 SetVisible(m_airText, m_air1, m_air2, true);

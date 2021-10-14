@@ -29,6 +29,9 @@ namespace Oxygen
             ClassInjector.RegisterTypeInIl2Cpp<AirBar>();
             Globals.Global.add_OnAllManagersSetup((Action) AirBar.Setup);
             
+            ClassInjector.RegisterTypeInIl2Cpp<AirPlane>();
+            RundownManager.add_OnExpeditionGameplayStarted((Action) AirPlane.Setup);
+            
             log = Log;
             var harmony = new Harmony(GUID);
             harmony.PatchAll();

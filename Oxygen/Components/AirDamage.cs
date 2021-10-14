@@ -12,7 +12,7 @@ namespace Oxygen.Components
         private HUDGlassShatter m_hudGlass;
         private Dam_PlayerDamageBase Damage;
         
-        public float m_air = 1f;
+        public static float m_air = 1f;
         private float m_damageTick = 0f;
         public float m_damageTime = 2f;
         public float m_damageAmount = 1f;
@@ -36,16 +36,6 @@ namespace Oxygen.Components
         void Update()
         {
             if (!RundownManager.ExpeditionIsStarted) return;
-            
-            // Decide if air should increase or decrease
-            if (m_air > 0 && m_playerAgent.m_movingCuller.CurrentNode.CourseNode.NodeID % 2 > 0)
-            {
-                m_air -= Time.deltaTime * 0.05f;
-            }
-            else if (m_air < 1)
-            {
-                m_air += Time.deltaTime * 0.05f;
-            }
 
             // Breathing intensity, Coughing, and Damage Tick
             if (m_air > 0.8f && m_air <= 1.0f)
@@ -82,6 +72,16 @@ namespace Oxygen.Components
                 
                 m_damageTick = 0f;
             }
+        }
+        
+        public static void AddAir(float amount)
+        {
+            m_air = Mathf.Clamp01(m_air + amount);
+        }
+
+        public static void RemoveAir(float amount)
+        {
+            m_air = Mathf.Clamp01(m_air - amount);
         }
     }
 }
