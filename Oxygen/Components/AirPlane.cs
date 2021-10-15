@@ -11,7 +11,6 @@ namespace Oxygen.Components
     {
         public static AirPlane Current;
         private EV_Plane airPlane = new EV_Plane();
-        private bool isAirPlaneRegistered = false;
         private float airAmount = 1f;
 
         public AirPlane(IntPtr value) : base(value)
@@ -20,12 +19,8 @@ namespace Oxygen.Components
 
         public void SetAirPlane(FogSettingsDataBlock fogSettings)
         {
-            if (airAmount <= 0.0)
-            {
-                EffectVolumeManager.UnregisterVolume((EffectVolume) this.airPlane);
-                this.isAirPlaneRegistered = false;
-            }
-            else
+            //TODO Implement unregister 
+            if (airAmount > 0.0)
             {
                 this.airPlane.invert = (double) fogSettings.DensityHeightMaxBoost > (double) fogSettings.FogDensity;
                 this.airPlane.contents = eEffectVolumeContents.Health;
@@ -34,7 +29,6 @@ namespace Oxygen.Components
                 this.airPlane.lowestAltitude = fogSettings.DensityHeightAltitude;
                 this.airPlane.highestAltitude = fogSettings.DensityHeightAltitude + fogSettings.DensityHeightRange;
                 EffectVolumeManager.RegisterVolume((EffectVolume) this.airPlane);
-                this.isAirPlaneRegistered = true;
             }
         }
 
@@ -43,10 +37,7 @@ namespace Oxygen.Components
             ExpeditionInTierData activeExpedition = RundownManager.ActiveExpedition;
             if (activeExpedition != null && activeExpedition.Expedition.FogSettings > 0U)
             {
-                if (!isAirPlaneRegistered)
-                {
-                    SetAirPlane(GameDataBlockBase<FogSettingsDataBlock>.GetBlock(activeExpedition.Expedition.FogSettings));
-                }
+                SetAirPlane(GameDataBlockBase<FogSettingsDataBlock>.GetBlock(activeExpedition.Expedition.FogSettings));
             }
             else
             {
@@ -63,14 +54,5 @@ namespace Oxygen.Components
             AirPlane.Current.OnExpeditionStarted();
         }
 
-        void Awake()
-        {
-            
-        }
-
-        void Update()
-        {
-
-        }
     }
 }

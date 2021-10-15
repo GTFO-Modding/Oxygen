@@ -27,7 +27,7 @@ namespace Oxygen
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirDamage.Setup);
             
             ClassInjector.RegisterTypeInIl2Cpp<AirBar>();
-            Globals.Global.add_OnAllManagersSetup((Action) AirBar.Setup);
+            RundownManager.add_OnExpeditionGameplayStarted((Action) AirBar.Setup);
             
             ClassInjector.RegisterTypeInIl2Cpp<AirPlane>();
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirPlane.Setup);

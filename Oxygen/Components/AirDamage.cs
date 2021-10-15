@@ -8,11 +8,12 @@ namespace Oxygen.Components
 {
     public class AirDamage : MonoBehaviour
     {
+        public static AirDamage Current;
         private PlayerAgent m_playerAgent;
         private HUDGlassShatter m_hudGlass;
         private Dam_PlayerDamageBase Damage;
         
-        public static float m_air = 1f;
+        public float m_air = 1f;
         private float m_damageTick = 0f;
         public float m_damageTime = 2f;
         public float m_damageAmount = 1f;
@@ -20,12 +21,14 @@ namespace Oxygen.Components
         public float m_shatterAmount = 0.05f;
         
         public AirDamage(IntPtr value) : base(value) { }
-        
+
         public static void Setup()
         {
-            AirBar.m_AirDamage = PlayerManager.Current.m_localPlayerAgentInLevel.gameObject.AddComponent<AirDamage>();
+            AirDamage.Current =
+                    PlayerManager.Current.m_localPlayerAgentInLevel.gameObject.AddComponent<AirDamage>();
         }
-        
+
+
         void Awake()
         {
             m_playerAgent = PlayerManager.GetLocalPlayerAgent();
@@ -74,12 +77,12 @@ namespace Oxygen.Components
             }
         }
         
-        public static void AddAir(float amount)
+        public void AddAir(float amount)
         {
             m_air = Mathf.Clamp01(m_air + amount);
         }
 
-        public static void RemoveAir(float amount)
+        public void RemoveAir(float amount)
         {
             m_air = Mathf.Clamp01(m_air - amount);
         }

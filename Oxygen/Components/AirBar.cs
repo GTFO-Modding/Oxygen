@@ -2,13 +2,12 @@
 using System;
 using UnityEngine;
 using Oxygen.Utils;
-using Player;
 
 namespace Oxygen.Components
 {
     public class AirBar : MonoBehaviour
     {
-        public static AirDamage m_AirDamage;
+        public static AirBar Current;
         public float m_air = 1f;
         public TextMeshPro m_airText;
         public RectTransform m_air1;
@@ -27,8 +26,7 @@ namespace Oxygen.Components
 
         public static void Setup()
         {
-            // Add AirBar script to playerStatus
-            GuiManager.Current.m_playerLayer.m_playerStatus.gameObject.AddComponent<AirBar>();
+            AirBar.Current = GuiManager.Current.m_playerLayer.m_playerStatus.gameObject.AddComponent<AirBar>();
         }
         
         void Awake()
@@ -61,12 +59,12 @@ namespace Oxygen.Components
 
         void Update()
         {
-            if (m_AirDamage == null) return;
+            if (AirDamage.Current == null) return;
             // If air value is not synced
-            if (this.m_air != AirDamage.m_air)
+            if (this.m_air != AirDamage.Current.m_air)
             {
                 // Sync air value
-                this.m_air = AirDamage.m_air;
+                this.m_air = AirDamage.Current.m_air;
                 
                 // Make bar visible
                 SetVisible(m_airText, m_air1, m_air2, true);
