@@ -6,26 +6,28 @@ using Oxygen.Utils;
 
 namespace Oxygen.Components
 {
-    public class AirDamage : MonoBehaviour
+    public class AirManager : MonoBehaviour
     {
-        public static AirDamage Current;
+        public static AirManager Current;
         private PlayerAgent m_playerAgent;
         private HUDGlassShatter m_hudGlass;
         private Dam_PlayerDamageBase Damage;
         
         public float m_air = 1f;
-        private float m_damageTick = 0f;
+        public float m_airGain = 0.02f;
+        public float m_airLoss = 0.02f;
+        public float m_damageTick = 0f;
         public float m_damageTime = 2f;
         public float m_damageAmount = 1f;
         public float m_glassShatter = 0f;
         public float m_shatterAmount = 0.05f;
         
-        public AirDamage(IntPtr value) : base(value) { }
+        public AirManager(IntPtr value) : base(value) { }
 
         public static void Setup()
         {
-            AirDamage.Current =
-                    PlayerManager.Current.m_localPlayerAgentInLevel.gameObject.AddComponent<AirDamage>();
+            AirManager.Current =
+                    PlayerManager.Current.m_localPlayerAgentInLevel.gameObject.AddComponent<AirManager>();
         }
 
 
@@ -41,6 +43,15 @@ namespace Oxygen.Components
             if (!RundownManager.ExpeditionIsStarted) return;
 
             // Breathing intensity, Coughing, and Damage Tick
+            if (m_air == 1f)
+            {
+                AirBar.Current.SetVisible(false);
+            }
+            else
+            {
+                AirBar.Current.SetVisible(true);
+            }   
+            
             if (m_air > 0.8f && m_air <= 1.0f)
             {
                 m_playerAgent.Breathing.TryChangeBreathingIntensity(0);
@@ -68,23 +79,31 @@ namespace Oxygen.Components
 
             if (m_damageTick > m_damageTime)
             {
-                Damage.NoAirDamage(m_damageAmount);
-                
-                m_glassShatter += m_shatterAmount;
-                m_hudGlass.SetGlassShatterProgression(m_glassShatter);
-                
-                m_damageTick = 0f;
+                AirDamage();
             }
         }
         
-        public void AddAir(float amount)
+        public void AddAir()
         {
+            float amount = this.m_airGain;
             m_air = Mathf.Clamp01(m_air + amount);
+            AirBar.Current.UpdateAirBar(m_air);
         }
 
         public void RemoveAir(float amount)
         {
             m_air = Mathf.Clamp01(m_air - amount);
+            AirBar.Current.UpdateAirBar(m_air);
+        }
+
+        public void AirDamage()
+        {
+            Damage.NoAirDamage(m_damageAmount);
+                
+            m_glassShatter += m_shatterAmount;
+            m_hudGlass.SetGlassShatterProgression(m_glassShatter);
+                
+            m_damageTick = 0f;
         }
     }
 }

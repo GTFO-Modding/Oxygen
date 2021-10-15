@@ -23,8 +23,8 @@ namespace Oxygen
         
         public override void Load()
         {
-            ClassInjector.RegisterTypeInIl2Cpp<AirDamage>();
-            RundownManager.add_OnExpeditionGameplayStarted((Action) AirDamage.Setup);
+            ClassInjector.RegisterTypeInIl2Cpp<AirManager>();
+            RundownManager.add_OnExpeditionGameplayStarted((Action) AirManager.Setup);
             
             ClassInjector.RegisterTypeInIl2Cpp<AirBar>();
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirBar.Setup);

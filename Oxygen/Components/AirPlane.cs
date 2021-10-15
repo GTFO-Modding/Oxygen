@@ -11,25 +11,15 @@ namespace Oxygen.Components
     {
         public static AirPlane Current;
         private EV_Plane airPlane = new EV_Plane();
-        private float airAmount = 1f;
 
         public AirPlane(IntPtr value) : base(value)
         {
         }
-
-        public void SetAirPlane(FogSettingsDataBlock fogSettings)
+        
+        public static void Setup()
         {
-            //TODO Implement unregister 
-            if (airAmount > 0.0)
-            {
-                this.airPlane.invert = (double) fogSettings.DensityHeightMaxBoost > (double) fogSettings.FogDensity;
-                this.airPlane.contents = eEffectVolumeContents.Health;
-                this.airPlane.modification = eEffectVolumeModification.Inflict;
-                this.airPlane.modificationScale = airAmount;
-                this.airPlane.lowestAltitude = fogSettings.DensityHeightAltitude;
-                this.airPlane.highestAltitude = fogSettings.DensityHeightAltitude + fogSettings.DensityHeightRange;
-                EffectVolumeManager.RegisterVolume((EffectVolume) this.airPlane);
-            }
+            AirPlane.Current = LocalPlayerAgentSettings.Current.gameObject.AddComponent<AirPlane>();
+            AirPlane.Current.OnExpeditionStarted();
         }
 
         public void OnExpeditionStarted()
@@ -44,15 +34,23 @@ namespace Oxygen.Components
                 SetAirPlane(GameDataBlockBase<FogSettingsDataBlock>.GetBlock(21U));
             }
         }
-
-        public static void Setup()
+        
+        public void SetAirPlane(FogSettingsDataBlock fogSettings)
         {
-            if (AirPlane.Current == null)
+            if (AirManager.Current.m_airLoss > 0.0f)
             {
-                AirPlane.Current = LocalPlayerAgentSettings.Current.gameObject.AddComponent<AirPlane>();
+                this.airPlane.invert = (double) fogSettings.DensityHeightMaxBoost > (double) fogSettings.FogDensity;
+                this.airPlane.contents = eEffectVolumeContents.Health;
+                this.airPlane.modification = eEffectVolumeModification.Inflict;
+                this.airPlane.modificationScale = AirManager.Current.m_airLoss;
+                this.airPlane.lowestAltitude = fogSettings.DensityHeightAltitude;
+                this.airPlane.highestAltitude = fogSettings.DensityHeightAltitude + fogSettings.DensityHeightRange;
+                EffectVolumeManager.RegisterVolume((EffectVolume) this.airPlane);
             }
-            AirPlane.Current.OnExpeditionStarted();
+            else
+            {
+                EffectVolumeManager.UnregisterVolume((EffectVolume) this.airPlane);
+            }
         }
-
     }
 }
