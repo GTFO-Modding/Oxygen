@@ -37,12 +37,12 @@ namespace Oxygen.Components
         
         public void SetAirPlane(FogSettingsDataBlock fogSettings)
         {
-            if (AirManager.Current.m_airLoss > 0.0f)
+            if (AirManager.Current.config.AirLoss > 0.0f)
             {
                 this.airPlane.invert = (double) fogSettings.DensityHeightMaxBoost > (double) fogSettings.FogDensity;
                 this.airPlane.contents = eEffectVolumeContents.Health;
                 this.airPlane.modification = eEffectVolumeModification.Inflict;
-                this.airPlane.modificationScale = AirManager.Current.m_airLoss;
+                this.airPlane.modificationScale = AirManager.Current.config.AirLoss;
                 this.airPlane.lowestAltitude = fogSettings.DensityHeightAltitude;
                 this.airPlane.highestAltitude = fogSettings.DensityHeightAltitude + fogSettings.DensityHeightRange;
                 EffectVolumeManager.RegisterVolume((EffectVolume) this.airPlane);

@@ -6,11 +6,13 @@ using HarmonyLib;
 using UnhollowerRuntimeLib;
 using Oxygen.Components;
 using Oxygen.Utils;
+using System.Collections.Generic;
 
 namespace Oxygen
 {
     [BepInPlugin(GUID, MODNAME, VERSION)]
     [BepInProcess("GTFO.exe")]
+    [BepInDependency(MTFO.MTFO.GUID, BepInDependency.DependencyFlags.HardDependency)]
     public class Plugin : BasePlugin
     {
         private const string
@@ -20,21 +22,35 @@ namespace Oxygen
             VERSION = "1.0.0";
         
         public static ManualLogSource log;
-        
+        public static OxygenConfig oxygenConfig;
+        public static Dictionary<uint, OxygenBlock> lookup = new();
+
         public override void Load()
         {
             ClassInjector.RegisterTypeInIl2Cpp<AirManager>();
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirManager.Setup);
-            
+
             ClassInjector.RegisterTypeInIl2Cpp<AirBar>();
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirBar.Setup);
-            
+
             ClassInjector.RegisterTypeInIl2Cpp<AirPlane>();
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirPlane.Setup);
-            
+
             log = Log;
             var harmony = new Harmony(GUID);
             harmony.PatchAll();
+
+            ConfigManager.Load("oxygen", out oxygenConfig);
+            foreach (OxygenBlock block in oxygenConfig.Blocks)
+            {
+                foreach (uint id in block.LevelLayouts)
+                {   
+                    if (!lookup.ContainsKey(id))
+                    {
+                        lookup.Add(id, block);
+                    }
+                }
+            }
         }
     }
 }
