@@ -1,25 +1,17 @@
-﻿namespace Oxygen.Utils
+﻿using BepInEx.Logging;
+
+namespace Oxygen.Utils
 {
-    public static class Log
+    static class Log
     {
-        public static void Debug(object msg)
-        {
-            Plugin.log.LogDebug(msg);
-        }
+        static Log() { }
 
-        public static void Error(object msg)
-        {
-            Plugin.log.LogError(msg);
-        }
-
-        public static void Warning(object msg)
-        {
-            Plugin.log.LogWarning(msg);
-        }
-
-        public static void Message(object msg)
-        {
-            Plugin.log.LogMessage(msg);
-        }
+        private static readonly ManualLogSource source = new(Plugin.MODNAME);
+        public static void Debug(object msg) => source.LogDebug(msg);
+        public static void Error(object msg) => source.LogError(msg);
+        public static void Fatal(object msg) => source.LogFatal(msg);
+        public static void Info(object msg) => source.LogInfo(msg);
+        public static void Message(object msg) => source.LogMessage(msg);
+        public static void Warning(object msg) => source.LogWarning(msg);
     }
 }

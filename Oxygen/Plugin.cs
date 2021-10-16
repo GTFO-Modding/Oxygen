@@ -15,13 +15,12 @@ namespace Oxygen
     [BepInDependency(MTFO.MTFO.GUID, BepInDependency.DependencyFlags.HardDependency)]
     public class Plugin : BasePlugin
     {
-        private const string
+        public const string
             MODNAME = "Oxygen",
             AUTHOR = "chasetug",
             GUID = "com." + AUTHOR + "." + MODNAME,
             VERSION = "1.0.0";
         
-        public static ManualLogSource log;
         public static OxygenConfig oxygenConfig;
         public static Dictionary<uint, OxygenBlock> lookup = new();
 
@@ -36,7 +35,6 @@ namespace Oxygen
             ClassInjector.RegisterTypeInIl2Cpp<AirPlane>();
             RundownManager.add_OnExpeditionGameplayStarted((Action) AirPlane.Setup);
 
-            log = Log;
             var harmony = new Harmony(GUID);
             harmony.PatchAll();
 
